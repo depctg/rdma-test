@@ -1,10 +1,10 @@
 .PHONY: clean
 
-NETLIB  ?= net-nng.o
+NETLIB  ?= net.o
 
 CFLAGS  := -Werror -g
 LD      := gcc
-LDLIBS  := ${LDLIBS} -libverbs -lpthread -lnng
+LDLIBS  := ${LDLIBS} -libverbs -lpthread -lnanomsg
 
 APPS    := client server
 COMMON  := config.o common.o $(NETLIB)

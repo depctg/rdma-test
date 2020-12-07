@@ -12,36 +12,38 @@ int parse_config(int argc, char *argv[]) {
 
     config.cq_size = 16;
     // for ib servers, use 0
-    config.use_roce = 0;
-    config.gid_idx = 3;
+    config.use_roce = 1;
+    config.gid_idx = 1;
 
     config.client_mr_size = 4096;
     // config.server_num_mr = 1024 * 512;
     // config.server_mr_size = 4096 * 8;
 
-    config.server_num_mr = 16;
+    config.server_num_mr = 1;
     config.server_mr_size = (size_t)1024 * 1024 * 1024;
 
     // set ib info
-    config.server.num_devices = 2;
+    config.server.num_devices = 1;
     config.server.port = 1;
-    config.server.device_name = "mlx5_1";
+    config.server.device_name = "mlx4_0";
 
-    config.client.num_devices = 2;
+    config.client.num_devices = 1;
     config.client.port = 1;
-    config.client.device_name = "mlx5_1";
+    config.client.device_name = "mlx4_0";
 
     // test parameters
-    config.request_size = 64;
-    config.server_url = "tcp://wuklab-01.ucsd.edu:2345";
+    config.request_size = 16;
+    config.server_url = "tcp://wuklab-03:2345";
     config.server_listen_url = "tcp://*:2345";
 
     config.server_enable_odp = 0;
     config.server_multi_conn = 1;
 
+    config.client_connections = 16;
+
     // parse arg
     int opt;
-    while ((opt = getopt(argc, argv, "m:s:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:s:c:p:")) != -1) {
         switch(opt) {
             case 'm':
                 config.server_num_mr = atoi(optarg);
@@ -54,6 +56,10 @@ int parse_config(int argc, char *argv[]) {
             case 'c':
                 config.client_program = optarg;
                 printf("set client_program = %s\n", config.client_program);
+                break;
+            case 'p':
+                config.client_connections = atoi(optarg);
+                printf("set client_connections = %d\n", config.client_connections);
                 break;
             default:
                 printf("read config.c for ali opts.\n");

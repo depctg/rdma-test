@@ -23,21 +23,24 @@ int client_exchange_info(struct rdma_conn *conn) {
     void *info, *peerinfo = NULL;
     int size = 1024*1024*64;
 
+    if (!sock_init) {
+        printf("connecting to server %s...\n", config.server_url);
+        if ((sock = nn_socket(AF_SP, NN_REQ)) < 0) {
+            fatal("nn_socket");
+        }
 
-    printf("connecting to server %s...\n", config.server_url);
-    if ((sock = nn_socket(AF_SP, NN_REQ)) < 0) {
-        fatal("nn_socket");
-    }
+        if (nn_setsockopt(sock, NN_SOL_SOCKET, NN_RCVBUF, &size, sizeof(size)) != 0) {
+            fatal("nng_setopt_size");
+        }
+        if (nn_setsockopt(sock, NN_SOL_SOCKET, NN_SNDBUF, &size, sizeof(size)) != 0) {
+            fatal("nng_setopt_size");
+        }
+        size = -1;
+        if (nn_setsockopt(sock, NN_SOL_SOCKET, NN_RCVMAXSIZE, &size, sizeof(size)) != 0) {
+            fatal("nng_setopt_size");
+        }
 
-    if (nn_setsockopt(sock, NN_SOL_SOCKET, NN_RCVBUF, &size, sizeof(size)) != 0) {
-        fatal("nng_setopt_size");
-    }
-    if (nn_setsockopt(sock, NN_SOL_SOCKET, NN_SNDBUF, &size, sizeof(size)) != 0) {
-        fatal("nng_setopt_size");
-    }
-    size = -1;
-    if (nn_setsockopt(sock, NN_SOL_SOCKET, NN_RCVMAXSIZE, &size, sizeof(size)) != 0) {
-        fatal("nng_setopt_size");
+        sock_init = 1;
     }
 
     if ((rv = nn_connect(sock, config.server_url)) < 0) {

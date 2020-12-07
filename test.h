@@ -57,6 +57,9 @@ struct config {
     int server_enable_odp;
     int server_multi_conn;
 
+    // enable multiple connections at client side..
+    int client_connections;
+
     char * client_program;
 };
 
